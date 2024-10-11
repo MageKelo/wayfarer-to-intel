@@ -24,6 +24,12 @@
     const latLng = ll ? ll.split(',') : [];
     const lat = parseFloat(latLng[0]); // 纬度
     const lng = parseFloat(latLng[1]); // 经度
+    const option = new Object({
+            fill: "#F423",
+            color: "#F42",
+            weight: 1,
+            clickable: false 
+       });
 
     if (lat && lng) {
        const poratl = new Object({
@@ -31,7 +37,7 @@
            lng: lng
        });
         console.log(poratl);
-        var c = L.circle( poratl, 20, '{ fill: "#F423", color: "#F42", weight: 1, clickable: false }' ).addTo(map);
+        var c = L.circle( poratl, 20, option ).addTo(map);
 
         var m = L.marker( poratl ,{ draggable: false, icon: new L.Icon.Default() }).addTo(map).on('dragend', function(e){
             var coords = e.target.getLatLng();
