@@ -24,25 +24,27 @@
     const latLng = ll ? ll.split(',') : [];
     const lat = parseFloat(latLng[0]); // 纬度
     const lng = parseFloat(latLng[1]); // 经度
-    const option = new Object({
+    const optionTest = new Object({
             fill: "#F423",
             color: "#F42",
             weight: 1,
-            clickable: false 
+            clickable: false
        });
 
     if (lat && lng) {
-       const poratl = new Object({
-           lat: lat,
-           lng: lng
+       const poratlTest = new Object({
+           _latlng:{
+               lat: lat,
+               lng: lng
+           }
        });
-        console.log(poratl);
-        var c = L.circle( poratl, 20, option ).addTo(map);
-
-        var m = L.marker( poratl ,{ draggable: false, icon: new L.Icon.Default() }).addTo(map).on('dragend', function(e){
+        console.log(poratlTest);
+        var c = L.circle( poratlTest._latlng,20,optionTest ).addTo(map);
+        console.log(2);
+        var m = L.marker( poratlTest._latlng ,{ draggable: false, icon: new L.Icon.Default() }).addTo(map).on('dragend', function(e){
             var coords = e.target.getLatLng();
             c.setLatLng( coords );
         });
+        console.log(3);
     }
-   
 })();
