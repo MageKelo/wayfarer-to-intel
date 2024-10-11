@@ -1,59 +1,50 @@
 // ==UserScript==
-// @name         to-intel
-// @namespace    http://tampermonkey.net/
-// @version      2024-10-07
-// @description  try to take over the world!
-// @author       Kelo
-// @match        https://wayfarer.nianticlabs.com/new/review
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=nianticlabs.com
-// @grant        none
+// @name       search-wayspot
+// @namespace   http://tampermonkey.net/
+// @match           https://intel.ingress.com/intel?ll=*.*&z=18&pll=*,*
+// @author kelo
+// @updateURL  https://github.com/MageKelo/wayfarer-to-intel/blob/main/search-wayspot.js
+// @downloadURL  https://github.com/MageKelo/wayfarer-to-intel/blob/main/search-wayspot.js
+// @version     1.0
+// @grant       none
 // ==/UserScript==
 
 (function() {
     'use strict';
 
-    let originalXhrOpen = XMLHttpRequest.prototype.open;
-    let lat;
-    let lng;
+    // 确保地图已加载
+    if (!window.map || !L.marker) {
+        alert('地图或Leaflet标记功能未加载！');
+        return;
+    }
 
-    // 创建按钮
-    const button = document.createElement('button');
-    button.innerText = 'to intel';
-    button.className = 'wf-button';
+    // 从URL中获取经纬度参数
+    const params = new URLSearchParams(window.location.search);
+    const ll = params.get('ll'); // 获取 'll' 参数，包含纬度和经度
+    const latLng = ll ? ll.split(',') : [];
+    const lat = parseFloat(latLng[0]); // 纬度
+    const lng = parseFloat(latLng[1]); // 经度
+    const optionTest = new Object({
+            fill: "#F423",
+            color: "#F42",
+            weight: 1,
+            clickable: false
+       });
 
-    // 观察目标 div 并添加按钮
-    const observer = new MutationObserver(() => {
-        const container = document.querySelector('.action-button-container');
-        if (container) {
-            container.insertBefore(button, container.firstChild);
-            observer.disconnect(); // 添加后停止观察
-        }
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
-
-
-    // 拦截 XMLHttpRequest 请求
-    XMLHttpRequest.prototype.open = function(method, url) {
-        this.addEventListener('load', function() {
-            if (url.includes('/api/v1/vault/review')) {
-                const data = JSON.parse(this.responseText);
-                if (data.result.lat) {
-                    lat = data.result.lat;
-                    lng = data.result.lng;
-                }
-            }
+    if (lat && lng) {
+       const poratlTest = new Object({
+           _latlng:{
+               lat: lat,
+               lng: lng
+           }
+       });
+        console.log(poratlTest);
+        var c = L.circle( poratlTest._latlng,20,optionTest ).addTo(map);
+        console.log(2);
+        var m = L.marker( poratlTest._latlng ,{ draggable: false, icon: new L.Icon.Default() }).addTo(map).on('dragend', function(e){
+            var coords = e.target.getLatLng();
+            c.setLatLng( coords );
         });
-        return originalXhrOpen.apply(this, arguments);
-    };
-
-    // 按钮点击事件
-    button.onclick = function() {
-        if (lat !== null && lng !== null) {
-            const url = `https://intel.ingress.com/intel?ll=${lat},${lng}&z=18&pll=${lat},${lng}`;
-            window.open(url, '_blank'); // 在新窗口打开链接
-        } else {
-            alert('当前没有可用的经纬度数据，请先刷新页面或访问相关页面。');
-        }
-    };
+        console.log(3);
+    }
 })();
