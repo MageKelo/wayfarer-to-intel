@@ -31,20 +31,19 @@
             clickable: false
        });
 
-    if (lat && lng) {
+    setTimeout(function(){
+               if (lat && lng) {
        const poratlTest = new Object({
            _latlng:{
                lat: lat,
                lng: lng
            }
        });
-        console.log(poratlTest);
         var c = L.circle( poratlTest._latlng,20,optionTest ).addTo(map);
-        console.log(2);
         var m = L.marker( poratlTest._latlng ,{ draggable: false, icon: new L.Icon.Default() }).addTo(map).on('dragend', function(e){
             var coords = e.target.getLatLng();
             c.setLatLng( coords );
         });
-        console.log(3);
     }
+    },1000)
 })();
